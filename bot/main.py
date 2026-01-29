@@ -35,7 +35,7 @@ async def on_startup(bot: Bot):
         await bot.set_webhook(webhook_url)
         logger.info(f"Webhook set to {webhook_url}")
 
-async def main():
+def main():
     """
     Botni ishga tushirish
     """
@@ -73,25 +73,21 @@ async def main():
         setup_application(app, dp, bot=bot)
         
         port = int(os.getenv("PORT", 8080))
+        # web.run_app independently manages the event loop
         web.run_app(app, host="0.0.0.0", port=port)
         
     else:
-        # Polling defaults
         logger.info("Starting in POLLING mode...")
-        await bot.delete_webhook(drop_pending_updates=True)
-        await dp.start_polling(bot)
+        
+        async def run_polling():
+            await bot.delete_webhook(drop_pending_updates=True)
+            await dp.start_polling(bot)
+            
+        asyncio.run(run_polling())
 
 if __name__ == "__main__":
     try:
-        if os.getenv("RUN_MODE") == "webhook":
-             # Webhook mode doesn't need asyncio.run here as web.run_app handles it
-             # But since main() has logic for both, we need to adapt slightly or just call main directly properly
-             # main() is async, web.run_app is blocking.
-             # The standard way for aiogram webhook is different from polling structure.
-             # Let's refactor slightly to separating blocking web.run_app call.
-             asyncio.run(main())
-        else:
-             asyncio.run(main())
+        main()
     except KeyboardInterrupt:
         logger.info("Bot to'xtatildi")
     except Exception as e:
