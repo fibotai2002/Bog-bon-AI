@@ -17,3 +17,4 @@ services:
         value: 5476913898
       - key: GEMINI_MODEL
         value: gemini-1.5-flash
+    plan: free
