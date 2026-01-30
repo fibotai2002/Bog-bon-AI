@@ -180,20 +180,36 @@ async def back_to_start(callback: CallbackQuery, state: FSMContext):
     """
     await state.clear()
     
-    welcome_text = """🌾 <b>Agro AI Bot</b>
-
-Zararlangan ekin qismining rasmini yuboring:
-
-🍃 <b>Barg</b> - kasallik belgilari, dog'lar
-🍎 <b>Meva</b> - chirish, deformatsiya
-🌿 <b>Poya</b> - zarar, kasallik
-🐛 <b>Hashorot</b> - zararkunanda identifikatsiya
-
-Quyidagi tugmalardan birini tanlang:"""
+    user_id = callback.from_user.id
+    user_lang = get_user_lang(user_id)
+    
+    welcome_text = get_text("welcome_back", user_lang).format(name=callback.from_user.first_name) + "\n\n"
+    welcome_text += get_text("welcome_desc", user_lang) + "\n\n"
+    welcome_text += get_text("photo_prompt", user_lang)
     
     await callback.message.edit_text(
         welcome_text,
-        reply_markup=get_start_keyboard(),
+        reply_markup=get_start_keyboard(user_lang),
+        parse_mode="HTML"
+    )
+    
+    await callback.answer()
+
+@router.callback_query(F.data.in_(["start_using", "skip_tutorial"]))
+async def handle_tutorial_buttons(callback: CallbackQuery):
+    """
+    Tutorial tugmalarini qayta ishlash
+    """
+    user_id = callback.from_user.id
+    user_lang = get_user_lang(user_id)
+    
+    welcome_text = get_text("welcome_back", user_lang).format(name=callback.from_user.first_name) + "\n\n"
+    welcome_text += get_text("welcome_desc", user_lang) + "\n\n"
+    welcome_text += get_text("photo_prompt", user_lang)
+    
+    await callback.message.edit_text(
+        welcome_text,
+        reply_markup=get_start_keyboard(user_lang),
         parse_mode="HTML"
     )
     

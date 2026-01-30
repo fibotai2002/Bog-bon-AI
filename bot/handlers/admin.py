@@ -4,7 +4,7 @@ from aiogram.types import Message, ReplyKeyboardMarkup, KeyboardButton
 from aiogram.filters import Command
 import json
 import os
-from bot.config import ADMIN_IDS
+from bot.config import is_admin
 
 router = Router()
 
@@ -16,15 +16,17 @@ def get_admin_keyboard():
         resize_keyboard=True
     )
 
-def is_admin(user_id: int) -> bool:
-    return user_id in ADMIN_IDS
-
 @router.message(Command("admin"))
 async def cmd_admin(message: Message):
     if not is_admin(message.from_user.id):
+        await message.answer("⛔️ Sizda admin huquqi yo'q!")
         return
     
-    await message.answer("Admin panelga xush kelibsiz!", reply_markup=get_admin_keyboard())
+    await message.answer(
+        "🔐 <b>Admin Panel</b>\n\nXush kelibsiz!", 
+        reply_markup=get_admin_keyboard(),
+        parse_mode="HTML"
+    )
 
 @router.message(F.text == "📊 Statistika")
 async def show_stats(message: Message):
@@ -49,7 +51,7 @@ async def show_stats(message: Message):
         for region, count in regions.items():
             stats_msg += f"- {region}: {count}\n"
             
-        await message.answer(stats_msg)
+        await message.answer(stats_msg, parse_mode="HTML")
     except Exception as e:
         await message.answer(f"Xatolik yuz berdi: {str(e)}")
 
@@ -76,14 +78,14 @@ async def show_users(message: Message):
             line = f"{i}. <b>{name}</b> - {phone}\n"
             
             if len(current_msg) + len(line) > MAX_LENGTH:
-                await message.answer(current_msg)
+                await message.answer(current_msg, parse_mode="HTML")
                 current_msg = ""
             
             current_msg += line
             i += 1
             
         if current_msg:
-            await message.answer(current_msg)
+            await message.answer(current_msg, parse_mode="HTML")
             
     except Exception as e:
         await message.answer(f"Xatolik yuz berdi: {str(e)}")

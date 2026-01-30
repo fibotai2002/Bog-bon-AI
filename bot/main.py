@@ -14,7 +14,7 @@ from aiogram.webhook.aiohttp_server import SimpleRequestHandler, setup_applicati
 from aiohttp import web
 
 from bot.config import TELEGRAM_BOT_TOKEN
-from bot.handlers import start, diagnose, plan, registration, admin
+from bot.handlers import start, diagnose, plan, registration, admin, settings
 
 # Logging sozlash
 logging.basicConfig(
@@ -25,6 +25,9 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 async def on_startup(bot: Bot):
+    from bot.config import USER_DB, get_user_lang
+    from bot.utils.locales import get_text
+    
     webhook_url = os.getenv("WEBHOOK_URL")
     
     # Render.com automatic URL detection
@@ -34,6 +37,24 @@ async def on_startup(bot: Bot):
     if webhook_url:
         await bot.set_webhook(webhook_url)
         logger.info(f"Webhook set to {webhook_url}")
+    
+    # Barcha foydalanuvchilarga restart xabarini yuborish
+    logger.info("Sending startup notifications to all users...")
+    success_count = 0
+    fail_count = 0
+    
+    for user_id in USER_DB.keys():
+        try:
+            user_lang = get_user_lang(user_id)
+            message = get_text("startup_notification", user_lang)
+            await bot.send_message(chat_id=user_id, text=message)
+            success_count += 1
+            await asyncio.sleep(0.05)  # Rate limiting: 20 messages/second
+        except Exception as e:
+            fail_count += 1
+            logger.warning(f"Failed to send startup notification to {user_id}: {e}")
+    
+    logger.info(f"Startup notifications sent: {success_count} success, {fail_count} failed")
 
 def main():
     """
@@ -52,6 +73,7 @@ def main():
     dp.include_router(diagnose.router)
     dp.include_router(plan.router)
     dp.include_router(admin.router)
+    dp.include_router(settings.router)
     
     # Startup hook
     dp.startup.register(on_startup)

@@ -48,7 +48,21 @@ TEXTS = {
         "admin_copy": "📋 <b>AGRONOM UCHUN (COPY-PASTE):</b>",
         "welcome_back": "👋 Assalomu alaykum, <b>{name}</b>!\n\n🌾 <b>Agro AI Bot</b>ga xush kelibsiz!",
         "welcome_desc": "Ekinlaringizni tahlil qilish uchun rasm yuboring:",
-        "again_prompt": "📸 Yana rasm yuboring yoki bo'lim tanlang:"
+        "again_prompt": "📸 Yana rasm yuboring yoki bo'lim tanlang:",
+        
+        "startup_notification": "🔄 <b>Bot qayta ishga tushdi</b>\n\n⚠️ Texnik ishlar tufayli bot bir muddat to'xtab turgan. Noqulaylik uchun uzr so'raymiz!\n\n👨‍💻 Dasturchi: @fibotai\n\n✅ Bot endi to'liq ishlayapti. Davom eting!",
+        
+        "tutorial_title": "📚 <b>Botdan qanday foydalanish?</b>",
+        "tutorial_step1": "1️⃣ <b>Ekin qismini tanlang</b>\n🍃 Barg, 🍎 Meva, 🌿 Poya yoki 🐛 Hashorot",
+        "tutorial_step2": "2️⃣ <b>Yaxshi rasm oling</b>\n• Yaxshi yoritilgan joyda\n• Yaqindan va aniq\n• Kasallik/zarar ko'rinib tursin",
+        "tutorial_step3": "3️⃣ <b>Tahlilni oling</b>\nAI bir necha soniyada tahlil qiladi va tavsiyalar beradi",
+        "tutorial_footer": "✅ Tayyor! Endi botdan foydalanishingiz mumkin.",
+        "btn_start_using": "🚀 Ishlatishni boshlash",
+        "btn_skip_tutorial": "⏭ O'tkazib yuborish",
+        
+        "settings_menu": "⚙️ <b>Sozlamalar</b>",
+        "btn_change_language": "🌐 Tilni o'zgartirish",
+        "language_changed": "✅ Til muvaffaqiyatli o'zgartirildi!"
     },
 
     "uz_cyrl": {
@@ -96,7 +110,21 @@ TEXTS = {
         "admin_copy": "📋 <b>АГРОНОМ УЧУН (COPY-PASTE):</b>",
         "welcome_back": "👋 Ассалому алайкум, <b>{name}</b>!\n\n🌾 <b>Agro AI Bot</b>га хуш келибсиз!",
         "welcome_desc": "Экинларингизни таҳлил қилиш учун расм юборинг:",
-        "again_prompt": "📸 Яна расм юборинг ёки бўлим танланг:"
+        "again_prompt": "📸 Яна расм юборинг ёки бўлим танланг:",
+        
+        "startup_notification": "🔄 <b>Бот қайта ишга тушди</b>\n\n⚠️ Техник ишлар туфайли бот бир муддат тўхтаб турган. Ноқулайлик учун узр сўраймиз!\n\n👨‍💻 Дастурчи: @fibotai\n\n✅ Бот энди тўлиқ ишлаяпти. Давом етинг!",
+        
+        "tutorial_title": "📚 <b>Ботдан қандай фойдаланиш?</b>",
+        "tutorial_step1": "1️⃣ <b>Экин қисмини танланг</b>\n🍃 Барг, 🍎 Мева, 🌿 Поя ёки 🐛 Ҳашорот",
+        "tutorial_step2": "2️⃣ <b>Яхши расм олинг</b>\n• Яхши ёритилган жойда\n• Яқиндан ва аниқ\n• Касаллик/зарар кўриниб турсин",
+        "tutorial_step3": "3️⃣ <b>Таҳлилни олинг</b>\nAI бир неча сонияда таҳлил қилади ва тавсиялар беради",
+        "tutorial_footer": "✅ Тайёр! Энди ботдан фойдаланишингиз мумкин.",
+        "btn_start_using": "🚀 Ишлатишни бошлаш",
+        "btn_skip_tutorial": "⏭ Ўтказиб юбориш",
+        
+        "settings_menu": "⚙️ <b>Созламалар</b>",
+        "btn_change_language": "🌐 Тилни ўзгартириш",
+        "language_changed": "✅ Тил муваффақиятли ўзгартирилди!"
     },
 
     "ru": {
@@ -144,7 +172,21 @@ TEXTS = {
         "admin_copy": "📋 <b>ДЛЯ АГРОНОМА (COPY-PASTE):</b>",
         "welcome_back": "👋 Здравствуйте, <b>{name}</b>!\n\n🌾 Добро пожаловать в <b>Agro AI Bot</b>!",
         "welcome_desc": "Отправьте фото для анализа:",
-        "again_prompt": "📸 Отправьте еще фото или выберите раздел:"
+        "again_prompt": "📸 Отправьте еще фото или выберите раздел:",
+        
+        "startup_notification": "🔄 <b>Бот перезапущен</b>\n\n⚠️ Из-за технических работ бот был временно недоступен. Приносим извинения за неудобства!\n\n👨‍💻 Разработчик: @fibotai\n\n✅ Бот теперь полностью работает. Продолжайте!",
+        
+        "tutorial_title": "📚 <b>Как пользоваться ботом?</b>",
+        "tutorial_step1": "1️⃣ <b>Выберите часть растения</b>\n🍃 Лист, 🍎 Плод, 🌿 Стебель или 🐛 Насекомое",
+        "tutorial_step2": "2️⃣ <b>Сделайте хорошее фото</b>\n• В хорошо освещенном месте\n• Крупным планом и четко\n• Чтобы было видно болезнь/повреждение",
+        "tutorial_step3": "3️⃣ <b>Получите анализ</b>\nИИ проанализирует за несколько секунд и даст рекомендации",
+        "tutorial_footer": "✅ Готово! Теперь можете пользоваться ботом.",
+        "btn_start_using": "🚀 Начать использование",
+        "btn_skip_tutorial": "⏭ Пропустить",
+        
+        "settings_menu": "⚙️ <b>Настройки</b>",
+        "btn_change_language": "🌐 Изменить язык",
+        "language_changed": "✅ Язык успешно изменен!"
     },
 
     "en": {
@@ -192,7 +234,21 @@ TEXTS = {
         "admin_copy": "📋 <b>FOR AGRONOMIST (COPY-PASTE):</b>",
         "welcome_back": "👋 Hello, <b>{name}</b>!\n\n🌾 Welcome to <b>Agro AI Bot</b>!",
         "welcome_desc": "Send a photo for analysis:",
-        "again_prompt": "📸 Send another photo or choose a section:"
+        "again_prompt": "📸 Send another photo or choose a section:",
+        
+        "startup_notification": "🔄 <b>Bot Restarted</b>\n\n⚠️ The bot was temporarily unavailable due to maintenance. We apologize for the inconvenience!\n\n👨‍💻 Developer: @fibotai\n\n✅ The bot is now fully operational. Continue!",
+        
+        "tutorial_title": "📚 <b>How to use the bot?</b>",
+        "tutorial_step1": "1️⃣ <b>Select plant part</b>\n🍃 Leaf, 🍎 Fruit, 🌿 Stem or 🐛 Insect",
+        "tutorial_step2": "2️⃣ <b>Take a good photo</b>\n• In well-lit area\n• Close-up and clear\n• Show disease/damage clearly",
+        "tutorial_step3": "3️⃣ <b>Get analysis</b>\nAI will analyze in seconds and provide recommendations",
+        "tutorial_footer": "✅ Ready! You can now use the bot.",
+        "btn_start_using": "🚀 Start Using",
+        "btn_skip_tutorial": "⏭ Skip",
+        
+        "settings_menu": "⚙️ <b>Settings</b>",
+        "btn_change_language": "🌐 Change Language",
+        "language_changed": "✅ Language changed successfully!"
     }
 }
 
