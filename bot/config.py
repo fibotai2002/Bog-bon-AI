@@ -15,9 +15,18 @@ if not TELEGRAM_BOT_TOKEN:
     raise ValueError("TELEGRAM_BOT_TOKEN muhit o'zgaruvchisi topilmadi!")
 
 # Gemini API sozlamalari
+# Gemini API sozlamalari
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
-if not GEMINI_API_KEY:
-    raise ValueError("GEMINI_API_KEY muhit o'zgaruvchisi topilmadi!")
+GEMINI_API_KEY_2 = os.getenv("GEMINI_API_KEY_2")
+
+GEMINI_API_KEYS = []
+if GEMINI_API_KEY:
+    GEMINI_API_KEYS.append(GEMINI_API_KEY)
+if GEMINI_API_KEY_2:
+    GEMINI_API_KEYS.append(GEMINI_API_KEY_2)
+
+if not GEMINI_API_KEYS:
+    raise ValueError("Kamida bitta GEMINI_API_KEY bo'lishi shart!")
 
 GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-1.5-flash")
 
@@ -33,8 +42,8 @@ MAX_IMAGE_SIZE = 1280  # pikselda
 JPEG_QUALITY = 85
 
 # Gemini retry sozlamalari
-GEMINI_TIMEOUT = 30  # soniya
-GEMINI_MAX_RETRIES = 1
+GEMINI_TIMEOUT = 60  # soniya (oshirildi)
+GEMINI_MAX_RETRIES = 2
 
 import json
 from typing import Dict, Any
