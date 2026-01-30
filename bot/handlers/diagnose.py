@@ -168,7 +168,24 @@ async def handle_photo(message: Message, state: FSMContext, bot: Bot):
     except Exception as e:
         animation_task.cancel()
         logger.error(f"Tahlil xatosi: {e}", exc_info=True)
+        
+        # Foydalanuvchiga oddiy xabar
         await processing_msg.edit_text(get_text("error_processing", lang))
+        
+        # Adminga to'liq hisobot yuborish
+        try:
+            from bot.config import ADMIN_IDS
+            error_report = (
+                f"🚨 <b>XATOLIK HISOBOTI</b>\n\n"
+                f"👤 User: {user_id}\n"
+                f"📝 Lang: {lang}\n"
+                f"🎯 Target: {target_type}\n\n"
+                f"❌ Error:\n<code>{str(e)[:3500]}</code>"
+            )
+            for admin_id in ADMIN_IDS:
+                await bot.send_message(chat_id=admin_id, text=error_report, parse_mode="HTML")
+        except Exception as admin_err:
+            logger.error(f"Adminga xato yuborishda muammo: {admin_err}")
 
 @router.message(DiagnosisStates.waiting_for_photo)
 async def handle_unknown_content(message: Message):
