@@ -11,7 +11,7 @@ async def handle_photo(message: types.Message, bot):
     Rasm xabarlarini qabul qiladi va tahlil qiladi.
     """
     # Foydalanuvchiga kutib turishini aytish
-    wait_msg = await message.reply("Rasm tahlil qilinmoqda... Iltimos kuting ⏳")
+    wait_msg = await message.reply("Rasm tahlil qilinmoqda... ⏳\nTahlil 1-3 minut vaqt olishi mumkin.")
     
     try:
         # Rasmni yuklab olish
@@ -43,35 +43,39 @@ async def handle_photo(message: types.Message, bot):
 
 def format_analysis_result(data: dict) -> str:
     """
-    JSON natijani chiroyli o'qiladigan matnga aylantiradi.
+    JSON natijani rasmga (skrinshot) mos formatda chiqaradi.
     """
-    status_icon = "🟢" if data.get("status") == "healthy" else "🔴"
+    # 1. Taxmin va Ishonch
+    disease = data.get('disease_name', 'Aniqlanmadi')
+    confidence = data.get('confidence', 0)
     
-    text = f"**Tahlil Natijasi:**\n\n"
-    text += f"🌿 **O'simlik:** {data.get('plant', 'Noma\\'lum')}\n"
-    text += f"{status_icon} **Holati:** {data.get('status', '').title()}\n"
-    text += f"🦠 **Kasallik/Tashxis:** {data.get('disease', 'Aniqlanmadi')}\n"
-    text += f"📊 **Aniqlik:** {data.get('confidence_percent', 0)}%\n\n"
+    text = f"📌 **Taxmin:** {disease}\n"
+    text += f"📊 **Ishonch:** {confidence}%\n\n"
     
-    if data.get("symptoms"):
-        text += "**Belgilar:**\n"
-        for symptom in data["symptoms"]:
-            text += f"- {symptom}\n"
+    # 2. Vetaptekadan so'rang
+    if data.get("pharmacy_query"):
+        text += "🗣 _Vetaptekadan so'rang:_\n"
+        text += f"_{data['pharmacy_query']}_\n\n"
+        
+    # 3. Retsept
+    if data.get("recipe"):
+        text += "🥛 **Retsept (10L suvga):**\n"
+        for item in data["recipe"]:
+            text += f"• {item}\n"
         text += "\n"
         
-    if data.get("treatment"):
-        text += "**Davolash:**\n"
-        for treat in data["treatment"]:
-            text += f"💊 {treat}\n"
+    # 4. Agrotexnik tavsiyalar
+    if data.get("agrotechnical"):
+        text += "⚡ **Agrotexnik tavsiyalar:**\n"
+        for item in data["agrotechnical"]:
+            text += f"• {item}\n"
         text += "\n"
         
-    if data.get("prevention"):
-        text += "**Oldini olish:**\n"
-        for prev in data["prevention"]:
-            text += f"🛡 {prev}\n"
-        text += "\n"
+    # 5. Eslatma
+    if data.get("warning"):
+        text += f"❗️ **Eslatma:** {data['warning']}\n\n"
         
-    if data.get("notes"):
-        text += f"💡 **Qo'shimcha:** {data['notes']}"
+    # 6. PRO tarif (statik matn)
+    text += "💎 **PRO tarifda batafsil tahlil va ko'proq tavsiyalar!**"
         
     return text

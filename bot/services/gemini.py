@@ -6,108 +6,101 @@ import json
 genai.configure(api_key=GOOGLE_API_KEY)
 
 # Modelni tanlash (Flash modeli tez va arzon)
-MODEL_NAME = 'gemini-1.5-flash'
+MODEL_NAME = 'gemini-3-pro-preview'
 
-# Tizim ko'rsatmasi (System Prompt) - User bergan prompt
+import time
+from config import GOOGLE_API_KEY, GOOGLE_API_KEY_2
+
+# Tizim ko'rsatmasi (System Prompt) - o'zgarishsiz qoladi...
 SYSTEM_PROMPT = """
-You are a professional agronomist and plant pathologist with real-world farming experience.
+You are a friendly and experienced gardener/agronomist (Bog'bon ota).
 
 ROLE:
-You help farmers and gardeners detect plant diseases from images and give practical treatment advice.
+You analyze plant images and give VERY SPECIFIC, PRACTICAL advice to farmers in UZBEK.
 
 TASK:
-Analyze the provided plant image and identify disease or confirm that the plant is healthy.
+Identify the disease/pest and provide a structured recipe and instructions.
 
 INPUT:
-- Image: fruit / vegetable / leaf photo
-- Plant name (user-provided): {{PLANT_NAME}}
-- Language: Uzbek
+- Image: plant photo
+- Plant name: {{PLANT_NAME}}
 
 RULES:
-1. Analyze the image carefully using visual symptoms.
-2. Use the plant name only as context, not as absolute truth.
-3. Detect the SINGLE most likely disease OR return "Healthy".
-4. Estimate confidence percentage (0–100).
-5. Recommend commonly available treatments (chemicals or organic).
-6. If image quality is poor, still respond but lower confidence.
-7. NEVER say you are an AI.
-8. NEVER include medical or legal disclaimers.
-9. Be concise, clear, farmer-friendly.
-10. Output MUST be valid JSON ONLY.
+1. Language: Uzbek (Latin).
+2. Be precise. If it's a pest like "Oq qanot", say it.
+3. Your output MUST be in the exact JSON format below.
+4. "pharmacy_query": This is a sentence the farmer can say at the pharmacy. It must be in the first person ("Aka, pomidorimni...").
+5. "recipe": specific drug names and dosages for 10L water.
+6. "agrotechnical": physical/mechanical methods (yellow sticky traps, weeding, etc).
+7. "warning": safety advice.
 
-SPECIAL LOGIC:
-- If no disease signs are visible → disease = "Healthy"
-- If confidence < 50 → mention uncertainty in "notes"
-- Treatments must be realistic and widely used
-- Prevention tips must be actionable
-- Avoid scientific jargon overload
-
-OUTPUT FORMAT (STRICT JSON, NO EXTRA TEXT):
-
+OUTPUT FORMAT (STRICT JSON):
 {
   "plant": "{{PLANT_NAME}}",
-  "status": "diseased | healthy",
-  "disease": "<disease name or Healthy>",
-  "confidence_percent": <number>,
-  "symptoms": [
-    "<short symptom 1>",
-    "<short symptom 2>"
+  "disease_name": "<Disease Name> (<Russian/Common Name if exists>)",
+  "confidence": <number 0-100>,
+  "pharmacy_query": "<Text to say at pharmacy. Example: 'Aka, pomidorimni oq qanot bosib ketdi. Mospilan yoki Teppeki bering.'>",
+  "recipe": [
+    "<Drug Name>: <Dosage> (<Instruction>)",
+    "<Drug Name 2>: <Dosage> (<Instruction>)"
   ],
-  "treatment": [
-    "<medicine or method 1>",
-    "<medicine or method 2>"
+  "agrotechnical": [
+    "<Method 1>",
+    "<Method 2>"
   ],
-  "prevention": [
-    "<prevention tip 1>",
-    "<prevention tip 2>"
-  ],
-  "notes": "<short helpful note if needed>"
+  "warning": "<Safety warning text>"
 }
 """
 
 async def analyze_image_with_gemini(image_data: bytes, plant_name: str = "Unknown") -> dict:
     """
-    Rasmni Gemini AI orqali tahlil qiladi va JSON qaytaradi.
-    
-    Args:
-        image_data (bytes): Rasm baytlari.
-        plant_name (str): O'simlik nomi (ixtiyoriy).
-        
-    Returns:
-        dict: Tahlil natijalari lug'at ko'rinishida.
+    Rasmni Gemini AI orqali tahlil qiladi (Fallback bilan).
     """
+    start_time = time.time()
+    
+    # 1-urinish: Asosiy kalit bilan
     try:
-        model = genai.GenerativeModel(MODEL_NAME)
-        
-        # Promptga o'simlik nomini joylash
-        final_prompt = SYSTEM_PROMPT.replace("{{PLANT_NAME}}", plant_name)
-        
-        # Rasmni tayyorlash
-        img_parts = [
-            {
-                "mime_type": "image/jpeg", # Yoki 'image/png', lekin jpeg ko'p holatda ishlaydi
-                "data": image_data
-            },
-            final_prompt
-        ]
-        
-        # Generatsiya qilish
-        response = model.generate_content(img_parts)
-        response_text = response.text
-        
-        # JSON ni tozalash va parse qilish
-        # Ba'zan model ```json ... ``` ichida qaytarishi mumkin
-        cleaned_text = response_text.strip()
-        if cleaned_text.startswith("```json"):
-            cleaned_text = cleaned_text[7:]
-        if cleaned_text.endswith("```"):
-            cleaned_text = cleaned_text[:-3]
-            
-        return json.loads(cleaned_text)
-        
+        print("Gemini: Asosiy API kalit ishlatilmoqda...")
+        genai.configure(api_key=GOOGLE_API_KEY)
+        result = await _generate(image_data, plant_name)
+        result['duration'] = round(time.time() - start_time, 2)
+        return result
     except Exception as e:
-        print(f"Gemini Error: {e}")
+        print(f"Gemini Primary Error: {e}")
+        import traceback
+        traceback.print_exc() # Batafsil xatolikni chiqarish
+        
+        # 2-urinish: Zaxira kalit bilan (agar mavjud bo'lsa)
+        if GOOGLE_API_KEY_2:
+            try:
+                print("Gemini: Zaxira API kalitga o'tilmoqda...")
+                genai.configure(api_key=GOOGLE_API_KEY_2)
+                result = await _generate(image_data, plant_name)
+                result['duration'] = round(time.time() - start_time, 2)
+                return result
+            except Exception as e2:
+                print(f"Gemini Secondary Error: {e2}")
+        
         return {
             "error": True,
-            "message": "Tahlil qilishda xatolik yuz berdi. Iltimos qaytadan urinib ko'ring."
+            "message": "Tahlil qilish imkoni bo'lmadi (API xatolik). Iltimos keyinroq urinib ko'ring."
         }
+
+async def _generate(image_data: bytes, plant_name: str) -> dict:
+    """Yordamchi funksiya: so'rovni yuborish va natijani parse qilish"""
+    model = genai.GenerativeModel(MODEL_NAME)
+    final_prompt = SYSTEM_PROMPT.replace("{{PLANT_NAME}}", plant_name)
+    
+    img_parts = [
+        {"mime_type": "image/jpeg", "data": image_data},
+        final_prompt
+    ]
+    
+    response = model.generate_content(img_parts)
+    cleaned_text = response.text.strip()
+    if cleaned_text.startswith("```json"):
+        cleaned_text = cleaned_text[7:]
+    if cleaned_text.endswith("```"):
+        cleaned_text = cleaned_text[:-3]
+        
+    return json.loads(cleaned_text)
